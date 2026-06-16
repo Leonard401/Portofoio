@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Leonard — Builder & Mobile Developer</title>
+<meta name="description" content="Construiesc aplicații mobile și produse AI. De la idee la Google Play." />
+<meta name="theme-color" content="#060609" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060609;
+    --bg-2:#0a0a10;
+    --line:rgba(255,255,255,.08);
+    --line-2:rgba(255,255,255,.16);
+    --txt:#f6f6fb;
+    --txt-2:#aeafc0;
+    --txt-3:#6a6a7c;
+
+    --teal:#5eead4;
+    --violet:#a78bfa;
+    --rose:#fb7185;
+    --sky:#38bdf8;
+
+    --irid:linear-gradient(100deg,var(--teal),var(--violet) 45%,var(--rose) 80%);
+
+    --f-display:"Unbounded",sans-serif;
+    --f-body:"Hanken Grotesk",sans-serif;
+    --f-mono:"JetBrains Mono",monospace;
+
+    --maxw:1240px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:var(--f-body);
+    font-size:16.5px;
+    line-height:1.65;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:#fff;color:#000}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:-.01em}
+
+  @media (pointer:fine){
+    body, a, button, .work{cursor:none}
+  }
+
+  /* conținutul stă deasupra canvasului 3D fixat */
+  header.nav, section, footer, .marquee{position:relative;z-index:1}
+
+  /* ---------- canvas 3D (fix, călătorește cu scroll-ul) ---------- */
+  #webgl{position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0}
+
+  /* ---------- AURA — fir subțire chiar pe margine, cu puls discret ---------- */
+  .aura,.aura-glow{
+    position:fixed;inset:0;z-index:76;pointer-events:none;
+    padding:1.5px;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+            mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite:exclude;
+  }
+  .aura .spin,.aura-glow .spin{
+    position:absolute;inset:-100%;
+    background:conic-gradient(from 0deg,
+      var(--teal), var(--sky), var(--violet), var(--rose),
+      var(--violet), var(--teal));
+    animation:auraSpin 8s linear infinite;
+  }
+  .aura{animation:auraPulse 3.2s ease-in-out infinite}
+  .aura-glow{z-index:75;filter:blur(7px);animation:auraPulseGlow 3.2s ease-in-out infinite}
+  @keyframes auraSpin{to{transform:rotate(360deg)}}
+  @keyframes auraPulse{0%,100%{opacity:.5}50%{opacity:1}}
+  @keyframes auraPulseGlow{0%,100%{opacity:.12}50%{opacity:.45}}
+
+  /* ---------- texture & progress ---------- */
+  .grain{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  .progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--irid);z-index:80}
+
+  /* ---------- custom cursor ---------- */
+  .cur-dot,.cur-ring{position:fixed;top:0;left:0;border-radius:50%;pointer-events:none;z-index:90;transform:translate(-50%,-50%);mix-blend-mode:difference}
+  .cur-dot{width:7px;height:7px;background:#fff}
+  .cur-ring{width:34px;height:34px;border:1px solid rgba(255,255,255,.85);transition:width .28s,height .28s,opacity .28s}
+  .cur-ring.big{width:64px;height:64px;opacity:.9}
+  @media (pointer:coarse){.cur-dot,.cur-ring{display:none}}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+  section{padding:140px 0}
+  .eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--txt-3);display:inline-flex;align-items:center;gap:12px}
+  .eyebrow i{width:8px;height:8px;background:var(--irid);display:inline-block;transform:rotate(45deg)}
+  .sec-title{font-size:clamp(32px,4.6vw,56px);line-height:1.04;margin-top:22px;color:#fff;text-shadow:0 2px 26px rgba(0,0,0,.5)}
+  .sec-title::after{content:"";display:block;width:86px;height:3px;background:var(--irid);border-radius:3px;margin-top:26px;transform:scaleX(0);transform-origin:left;transition:transform 1s .25s cubic-bezier(.16,1,.3,1)}
+  .in .sec-title::after{transform:scaleX(1)}
+  .sec-head{margin-bottom:72px;max-width:760px;position:relative;z-index:1}
+  .sec-head p{color:var(--txt-2);margin-top:24px;font-size:clamp(16px,1.9vw,18px);max-width:560px}
+  .sec-ghost{position:absolute;top:-30px;right:-10px;font-family:var(--f-display);font-weight:800;
+    font-size:clamp(110px,18vw,240px);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.05);
+    pointer-events:none;user-select:none;z-index:0;will-change:transform}
+
+  /* ---------- nav ---------- */
+  header.nav{position:fixed;top:0;left:0;right:0;z-index:70;transition:.35s}
+  .nav-inner{max-width:var(--maxw);margin:0 auto;padding:22px 32px;display:flex;align-items:center;justify-content:space-between}
+  .nav.scrolled{background:rgba(6,6,9,.74);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+  .nav.scrolled .nav-inner{padding:14px 32px}
+  .logo{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:.01em}
+  .logo b{background:var(--irid);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+  nav.links{display:flex;gap:38px;font-family:var(--f-mono);font-size:12.5px;letter-spacing:.06em;color:var(--txt-2)}
+  nav.links a{position:relative;padding:4px 0;transition:color .25s}
+  nav.links a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--irid);transition:.3s}
+  nav.links a:hover,nav.links a.active{color:var(--txt)}
+  nav.links a:hover::after,nav.links a.active::after{width:100%}
+  .nav-cta{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.04em;padding:11px 22px;border:1px solid var(--line-2);border-radius:100px;transition:.3s;white-space:nowrap;display:inline-block}
+  .nav-cta:hover{background:#fff;color:#000;border-color:#fff}
+
+  /* ---------- hero ---------- */
+  .hero{min-height:100svh;display:flex;align-items:center;padding:140px 0 90px;overflow:hidden}
+  .hero-glow{position:absolute;top:50%;right:-12vw;width:62vw;aspect-ratio:1;transform:translateY(-50%);
+    background:radial-gradient(circle,rgba(167,139,250,.16),rgba(94,234,212,.08) 42%,transparent 70%);
+    filter:blur(50px);pointer-events:none}
+  /* scrim pentru lizibilitate: textul hero rămâne mereu citeț peste 3D */
+  .hero::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(95deg, rgba(6,6,9,.9) 0%, rgba(6,6,9,.55) 36%, rgba(6,6,9,0) 62%)}
+  @media (max-width:980px){
+    .hero::before{background:linear-gradient(180deg, rgba(6,6,9,.25) 0%, rgba(6,6,9,.88) 34%, rgba(6,6,9,.92) 72%, rgba(6,6,9,.7) 100%)}
+  }
+  .hero-content{position:relative;z-index:2;width:100%}
+
+  .status{position:relative;display:inline-flex;align-items:center;gap:11px;font-family:var(--f-mono);font-size:12px;letter-spacing:.05em;color:var(--txt);
+    padding:10px 18px;border-radius:100px;background:rgba(8,8,13,.6);backdrop-filter:blur(8px);margin-bottom:34px;isolation:isolate}
+  .status::before{content:"";position:absolute;inset:0;border-radius:100px;padding:1px;z-index:-1;
+    background:linear-gradient(90deg,var(--teal),var(--violet),var(--rose),var(--sky),var(--teal));
+    background-size:300% 100%;animation:borderFlow 5s linear infinite;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);mask-composite:exclude}
+  @keyframes borderFlow{to{background-position:300% 0}}
+  .status .live{width:7px;height:7px;background:var(--teal);position:relative;transform:rotate(45deg)}
+  .status .live::after{content:"";position:absolute;inset:-5px;background:var(--teal);opacity:.35;animation:ping 2s cubic-bezier(0,0,.2,1) infinite}
+  @keyframes ping{75%,100%{transform:scale(2.2);opacity:0}}
+
+  .hero .hi{font-family:var(--f-mono);font-size:clamp(13px,1.6vw,15px);color:var(--txt-2);letter-spacing:.1em;margin-bottom:14px}
+  .hero h1{font-weight:800;font-size:clamp(54px,12vw,164px);line-height:.96;letter-spacing:-.02em;text-transform:uppercase;
+    filter:drop-shadow(0 2px 5px rgba(0,0,0,.95)) drop-shadow(0 12px 34px rgba(0,0,0,.6)) drop-shadow(0 8px 36px rgba(167,139,250,.2))}
+  /* numele: ALB SOLID garantat; trecerea iridescentă e o bandă îngustă, rară */
+  .hero h1 .name{color:#fff;text-shadow:0 2px 30px rgba(0,0,0,.6)}
+  @supports ((-webkit-background-clip:text) or (background-clip:text)){
+    .hero h1 .name{
+      text-shadow:none;
+      background:linear-gradient(108deg,#fff 0%,#fff 44%,var(--teal) 48%,var(--violet) 50%,var(--rose) 52%,#fff 56%,#fff 100%);
+      background-size:320% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+      animation:sheen 8s linear infinite}
+  }
+  @keyframes sheen{0%{background-position:145% 0}100%{background-position:-45% 0}}
+  /* BUILDER: contur gros + umplere fină — mereu lizibil */
+  .hero h1 .outline{color:rgba(255,255,255,.88)}
+  @supports (-webkit-text-stroke:2px #fff){
+    .hero h1 .outline{color:rgba(255,255,255,.14);-webkit-text-stroke:2.6px #fff}
+  }
+  .hero h1 .row2{display:flex;align-items:center;gap:clamp(14px,2.5vw,30px)}
+  .hero h1 .spark{display:inline-block;width:clamp(28px,4.5vw,62px);height:clamp(28px,4.5vw,62px);background:var(--irid);
+    clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);animation:spin 9s linear infinite;flex:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hero .role{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin:30px 0 24px;font-family:var(--f-mono);font-size:clamp(12.5px,1.6vw,14.5px);color:var(--txt-2);letter-spacing:.04em}
+  .hero .role .sep{background:var(--irid);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .lead{max-width:520px;color:#cfd0de;font-size:clamp(16.5px,2.1vw,19px);margin-bottom:44px}
+  .hero .lead b{color:#fff;font-weight:600}
+  .cta-row{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  .btn{font-family:var(--f-mono);font-size:13.5px;letter-spacing:.03em;padding:17px 32px;border-radius:100px;display:inline-flex;align-items:center;gap:10px;transition:transform .3s,background .3s,color .3s,border-color .3s,box-shadow .3s;border:1px solid transparent;will-change:transform}
+  .btn-solid{background:#fff;color:#000;font-weight:500}
+  .btn-solid:hover{transform:translateY(-2px);box-shadow:0 0 34px rgba(167,139,250,.45),0 0 60px rgba(94,234,212,.25)}
+  .btn-line{border-color:var(--line-2);color:var(--txt)}
+  .btn-line:hover{border-color:#fff;box-shadow:0 0 26px rgba(94,234,212,.25)}
+  .btn .arw{transition:transform .3s}
+  .btn:hover .arw{transform:translate(3px,-3px)}
+  .scroll-cue{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:2;font-family:var(--f-mono);font-size:10px;letter-spacing:.3em;color:var(--txt-3);display:flex;flex-direction:column;align-items:center;gap:10px;transition:opacity .45s}
+  .scroll-cue.hide{opacity:0}
+  .scroll-cue .ln{width:1px;height:44px;background:var(--line-2);position:relative;overflow:hidden}
+  .scroll-cue .ln::after{content:"";position:absolute;top:0;left:0;width:100%;height:45%;background:var(--irid);animation:drop 1.9s ease-in-out infinite}
+  @keyframes drop{0%{transform:translateY(-100%)}100%{transform:translateY(230%)}}
+
+  /* ---------- marquee ---------- */
+  .marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:20px 0;background:var(--bg-2);transform:rotate(-1.2deg) scale(1.02);margin:10px 0 30px}
+  .mq-track{display:flex;gap:0;width:max-content;animation:mq 26s linear infinite}
+  .mq-track span{font-family:var(--f-display);font-weight:500;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-3);padding:0 28px;white-space:nowrap;display:flex;align-items:center;gap:28px}
+  .mq-track span::after{content:"◆";font-size:9px;background:var(--irid);-webkit-background-clip:text;background-clip:text;color:transparent}
+  @keyframes mq{to{transform:translateX(-50%)}}
+
+  /* ---------- despre ---------- */
+  .about-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:80px;align-items:start;position:relative;z-index:1}
+
+  .photo-scene{perspective:1000px;justify-self:center;position:relative}
+  .photo-aura{position:absolute;inset:-24px;border-radius:30px;z-index:-1;
+    background:conic-gradient(from 20deg,var(--teal),var(--violet),var(--rose),var(--sky),var(--teal));
+    filter:blur(34px);opacity:.5;animation:hueShift 9s linear infinite}
+  @keyframes hueShift{to{filter:blur(34px) hue-rotate(360deg)}}
+  .photo-card{position:relative;width:clamp(260px,26vw,330px);aspect-ratio:3/4;border-radius:18px;
+    border:1px solid var(--line-2);overflow:hidden;transform-style:preserve-3d;transition:transform .15s ease-out;
+    background:linear-gradient(155deg,#15151f,#0b0b12);box-shadow:0 30px 80px rgba(0,0,0,.55)}
+  .photo-card::before{content:"";position:absolute;inset:0;background:
+    linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+    background-size:26px 26px;mask:radial-gradient(120% 90% at 50% 30%,#000 30%,transparent 75%)}
+  .photo-card .shine{position:absolute;inset:0;background:radial-gradient(420px circle at var(--sx,50%) var(--sy,20%),rgba(255,255,255,.13),transparent 55%);pointer-events:none;transition:opacity .3s;opacity:0}
+  .photo-scene:hover .shine{opacity:1}
+  /* 📷 ÎNLOCUIEȘTE blocul .pc-fill de mai jos cu poza ta:
+     <img class="pc-fill" src="poza-mea.jpg" alt="Leonard" style="object-fit:cover"> */
+  .pc-fill{position:absolute;inset:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+  .pc-fill .big-l{font-family:var(--f-display);font-weight:800;font-size:110px;line-height:1;background:var(--irid);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:.9}
+  .pc-fill .note{font-family:var(--f-mono);font-size:10.5px;color:var(--txt-3);letter-spacing:.08em}
+  .pc-cap{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:center;
+    padding:14px 18px;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;color:var(--txt-2);
+    background:linear-gradient(transparent,rgba(0,0,0,.7));transform:translateZ(30px)}
+  .photo-tag{position:absolute;top:-15px;right:-22px;font-family:var(--f-mono);font-size:11.5px;color:#000;background:#fff;
+    padding:8px 15px;border-radius:100px;transform:rotate(5deg);box-shadow:0 12px 30px rgba(0,0,0,.4);z-index:2}
+
+  .about-text p{color:var(--txt-2);font-size:clamp(16.5px,2vw,19px);margin-bottom:22px;line-height:1.7}
+  .about-text p b{color:#fff;font-weight:600}
+  .facts{margin-top:46px;border-top:1px solid var(--line)}
+  .fact{display:grid;grid-template-columns:150px 1fr;gap:20px;padding:15px 0;border-bottom:1px solid var(--line);align-items:baseline}
+  .fact .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--txt-3)}
+  .fact .v{font-weight:600;font-size:16.5px;color:#fff}
+
+  /* ---------- ce fac ---------- */
+  .do-cols{display:grid;grid-template-columns:repeat(3,1fr);position:relative;z-index:1}
+  .do-col{padding:38px 36px;border-left:1px solid var(--line);transition:background .35s,box-shadow .35s}
+  .do-col:hover{background:rgba(255,255,255,.025);box-shadow:inset 0 1px 0 rgba(167,139,250,.35)}
+  .do-col .num{font-family:var(--f-mono);font-size:12px;color:var(--txt-3);display:block;margin-bottom:26px}
+  .do-col svg{width:30px;height:30px;stroke:url(#iridGrad);stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;margin-bottom:24px}
+  .do-col h3{font-size:18px;font-weight:700;margin-bottom:14px;letter-spacing:0;color:#fff}
+  .do-col p{color:var(--txt-2);font-size:15px;line-height:1.65}
+
+  /* ---------- proiecte ---------- */
+  .works{border-top:1px solid var(--line);position:relative;z-index:1}
+  .work{display:block;border-bottom:1px solid var(--line);padding:36px 8px;transition:background .35s;position:relative;overflow:hidden}
+  .work::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--acc,#fff);transform:scaleY(0);transition:transform .4s cubic-bezier(.16,1,.3,1)}
+  .work:hover{background:rgba(255,255,255,.025)}
+  .work:hover::before{transform:scaleY(1)}
+  .w-line{display:grid;grid-template-columns:60px 1fr auto 60px;gap:26px;align-items:center}
+  .w-idx{font-family:var(--f-mono);font-size:12.5px;color:var(--txt-3);display:flex;align-items:center;gap:10px}
+  .w-idx::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--acc,#fff);opacity:.9;box-shadow:0 0 14px var(--acc,#fff)}
+  .w-main h3{font-size:clamp(26px,4vw,44px);font-weight:700;letter-spacing:-.015em;line-height:1;color:#fff;transition:transform .35s cubic-bezier(.16,1,.3,1),text-shadow .35s}
+  .work:hover .w-main h3{transform:translateX(14px);text-shadow:0 0 38px color-mix(in srgb,var(--acc,#fff) 55%,transparent)}
+  .w-main p{font-family:var(--f-mono);font-size:12.5px;color:var(--txt-3);margin-top:10px;letter-spacing:.03em}
+  .w-status{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-2);
+    border:1px solid var(--line-2);padding:7px 14px;border-radius:100px;white-space:nowrap}
+  .w-status.live{color:#34d399;border-color:rgba(52,211,153,.45);box-shadow:0 0 18px rgba(52,211,153,.18)}
+  .w-arr{width:46px;height:46px;border-radius:50%;border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--txt-2);transition:.35s;justify-self:end}
+  .work:hover .w-arr{background:#fff;color:#000;border-color:#fff;transform:rotate(-45deg)}
+
+  .w-preview{position:fixed;top:0;left:0;z-index:55;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.7) rotate(4deg);transition:opacity .3s,transform .3s cubic-bezier(.16,1,.3,1);will-change:transform}
+  .w-preview.on{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(var(--tilt,0deg))}
+  .wp-phone{width:178px;aspect-ratio:9/18.5;border-radius:26px;background:#0c0c13;border:1px solid var(--line-2);padding:9px;
+    box-shadow:0 30px 70px rgba(0,0,0,.6),0 0 60px color-mix(in srgb,var(--acc,#fff) 26%,transparent)}
+  .wp-screen{position:relative;width:100%;height:100%;border-radius:18px;overflow:hidden;
+    background:linear-gradient(165deg,color-mix(in srgb,var(--acc,#888) 30%,#0a0a10),#08080d 60%)}
+  .wp-notch{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:54px;height:13px;border-radius:100px;background:#000;z-index:2}
+  .wp-letter{position:absolute;top:24%;left:50%;transform:translateX(-50%);font-family:var(--f-display);font-weight:800;font-size:54px;color:var(--acc,#fff);opacity:.95}
+  .wp-bars{position:absolute;left:14px;right:14px;bottom:48px;display:grid;gap:9px}
+  .wp-bars i{display:block;height:9px;border-radius:5px;background:rgba(255,255,255,.1)}
+  .wp-bars i:nth-child(1){width:85%}.wp-bars i:nth-child(2){width:62%;background:color-mix(in srgb,var(--acc,#fff) 55%,transparent)}.wp-bars i:nth-child(3){width:74%}
+  .wp-pill{position:absolute;bottom:14px;left:14px;right:14px;height:24px;border-radius:100px;background:var(--acc,#fff);opacity:.9;display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:8.5px;letter-spacing:.1em;color:#000;font-weight:600}
+
+  /* ---------- stats ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .stat{padding:52px 30px;text-align:left;border-left:1px solid var(--line)}
+  .stat:first-child{border-left:none}
+  .stat .n{font-family:var(--f-display);font-weight:800;font-size:clamp(36px,4.6vw,58px);line-height:1;letter-spacing:-.02em;color:#fff;text-shadow:0 0 38px rgba(94,234,212,.28)}
+  .stat .l{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;color:var(--txt-3);margin-top:14px;text-transform:uppercase}
+
+  /* ---------- viitor ---------- */
+  .future-list{position:relative;z-index:1;border-top:1px solid var(--line)}
+  .future{display:grid;grid-template-columns:60px 1fr auto;gap:26px;align-items:center;padding:34px 8px;border-bottom:1px solid var(--line);transition:.35s}
+  .future:hover{background:rgba(255,255,255,.025);padding-left:22px}
+  .future .num{font-family:var(--f-mono);font-size:12.5px;color:var(--txt-3)}
+  .future h3{font-size:clamp(19px,2.6vw,26px);font-weight:700;margin-bottom:8px;letter-spacing:-.01em;color:#fff}
+  .future p{color:var(--txt-2);font-size:15.5px;max-width:560px}
+  .future .soon{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.18em;padding:8px 16px;border-radius:100px;color:#000;background:var(--irid);font-weight:600;white-space:nowrap}
+
+  /* ---------- stack ---------- */
+  .tech-rows{position:relative;z-index:1}
+  .tech-row{display:grid;grid-template-columns:190px 1fr;gap:26px;align-items:center;padding:26px 0;border-bottom:1px solid var(--line)}
+  .tech-row:first-child{border-top:1px solid var(--line)}
+  .tech-row .cat{font-family:var(--f-mono);font-size:11.5px;color:var(--txt-3);letter-spacing:.18em;text-transform:uppercase}
+  .tech-pills{display:flex;flex-wrap:wrap;gap:10px}
+  .pill{font-family:var(--f-mono);font-size:13px;padding:9px 18px;border:1px solid var(--line);border-radius:10px;color:var(--txt-2);transition:.3s;cursor:default;background:rgba(255,255,255,.015)}
+  .pill:hover{border-color:var(--violet);color:#fff;transform:translateY(-3px);box-shadow:0 0 20px rgba(167,139,250,.22)}
+
+  /* ---------- contact ---------- */
+  .contact{text-align:left}
+  .contact .big{font-size:clamp(38px,7.6vw,96px);line-height:1.02;letter-spacing:-.02em;font-weight:800;text-transform:uppercase;margin-top:26px;max-width:13ch;color:#fff;filter:drop-shadow(0 8px 36px rgba(251,113,133,.18))}
+  .contact .big em{font-style:normal;background:var(--irid);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .mail-link{display:inline-flex;align-items:center;gap:16px;margin:46px 0 56px;font-family:var(--f-mono);font-size:clamp(15px,2.6vw,22px);color:#fff;border-bottom:1px solid var(--line-2);padding-bottom:12px;transition:.3s}
+  .mail-link:hover{border-color:var(--teal);gap:24px;text-shadow:0 0 24px rgba(94,234,212,.5)}
+  .socials{display:flex;gap:14px;flex-wrap:wrap}
+  .social{font-family:var(--f-mono);font-size:13px;letter-spacing:.03em;padding:15px 28px;border:1px solid var(--line-2);border-radius:100px;display:inline-flex;align-items:center;gap:10px;transition:background .3s,color .3s,border-color .3s,transform .3s,box-shadow .3s;will-change:transform}
+  .social:hover{background:#fff;color:#000;border-color:#fff;box-shadow:0 0 30px rgba(167,139,250,.4)}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line);padding:36px 0}
+  .foot-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;font-family:var(--f-mono);font-size:12px;color:var(--txt-3);letter-spacing:.03em}
+  .foot-inner .top{color:var(--txt-2);transition:.3s;cursor:pointer}
+  .foot-inner .top:hover{color:#fff}
+
+  /* ---------- reveal 3D ---------- */
+  .reveal{opacity:0;transform:perspective(1100px) rotateX(9deg) translateY(40px);transform-origin:top center;filter:blur(6px);
+    transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1),filter 1s}
+  .reveal.in{opacity:1;transform:perspective(1100px) rotateX(0) translateY(0);filter:none}
+  .stagger>*{opacity:0;transform:perspective(1000px) rotateX(10deg) translateY(34px);transform-origin:top center;
+    transition:opacity .85s cubic-bezier(.16,1,.3,1),transform .85s cubic-bezier(.16,1,.3,1)}
+  .stagger.in>*{opacity:1;transform:perspective(1000px) rotateX(0) translateY(0)}
+  .stagger.in>*:nth-child(1){transition-delay:.04s}.stagger.in>*:nth-child(2){transition-delay:.12s}
+  .stagger.in>*:nth-child(3){transition-delay:.20s}.stagger.in>*:nth-child(4){transition-delay:.28s}
+  .stagger.in>*:nth-child(5){transition-delay:.36s}.stagger.in>*:nth-child(6){transition-delay:.44s}
+  .hero-anim>*{opacity:0;transform:translateY(34px);animation:up 1s cubic-bezier(.16,1,.3,1) forwards}
+  .hero-anim>*:nth-child(1){animation-delay:.15s}.hero-anim>*:nth-child(2){animation-delay:.27s}
+  .hero-anim>*:nth-child(3){animation-delay:.39s}.hero-anim>*:nth-child(4){animation-delay:.51s}
+  .hero-anim>*:nth-child(5){animation-delay:.63s}.hero-anim>*:nth-child(6){animation-delay:.75s}
+  @keyframes up{to{opacity:1;transform:none}}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:980px){
+    nav.links{display:none}
+    .aura,.aura-glow{inset:7px;border-radius:16px}
+    .hero::before{background:linear-gradient(180deg, rgba(6,6,9,.15) 0%, rgba(6,6,9,.72) 32%, rgba(6,6,9,.8) 100%)}
+    .about-grid{grid-template-columns:1fr;gap:64px}
+    .photo-scene{justify-self:start}
+    .do-cols{grid-template-columns:1fr}
+    .do-col{border-left:none;border-top:1px solid var(--line);padding:34px 6px}
+    .stats{grid-template-columns:1fr 1fr}
+    .stat{padding:36px 22px}
+    .stat:nth-child(odd){border-left:none}
+    .w-line{grid-template-columns:1fr auto;gap:16px}
+    .w-idx,.w-status{display:none}
+    .tech-row{grid-template-columns:1fr;gap:14px}
+    section{padding:100px 0}
+    .w-preview{display:none}
+    .future{grid-template-columns:1fr}
+    .future .num{display:none}
+    .future .soon{justify-self:start}
+  }
+  @media (max-width:520px){
+    .wrap{padding:0 22px}
+    .nav-inner{padding:18px 22px}
+    .photo-tag{right:-8px}
+    .hero h1 .outline{-webkit-text-stroke-width:1.9px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .reveal,.stagger>*,.hero-anim>*{opacity:1!important;transform:none!important;filter:none!important}
+    .cur-dot,.cur-ring{display:none}
+    .aura,.aura-glow{opacity:.25}
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="iridGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#5eead4"/><stop offset=".5" stop-color="#a78bfa"/><stop offset="1" stop-color="#fb7185"/>
+  </linearGradient>
+</defs></svg>
+
+<canvas id="webgl" aria-hidden="true"></canvas>
+
+<!-- aura pe marginile ecranului: linie fină + glow cu puls -->
+<div class="aura" aria-hidden="true"><div class="spin"></div></div>
+<div class="aura-glow" aria-hidden="true"><div class="spin"></div></div>
+
+<div class="progress" id="progress"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="cur-dot" id="curDot"></div>
+<div class="cur-ring" id="curRing"></div>
+
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#top" class="logo">leonard<b>.</b></a>
+    <nav class="links">
+      <a href="#despre">DESPRE</a>
+      <a href="#proiecte">PROIECTE</a>
+      <a href="#viitor">VIITOR</a>
+      <a href="#stack">STACK</a>
+    </nav>
+    <a href="#contact" class="nav-cta" data-magnet>HAI SĂ VORBIM →</a>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <div class="hero-glow" aria-hidden="true"></div>
+
+  <div class="wrap hero-content">
+    <div class="hero-anim">
+      <span class="status"><span class="live"></span>DUMA E LIVE PE GOOGLE PLAY · SUBTRACK URMEAZĂ</span>
+      <p class="hi">// salut, eu sunt</p>
+      <h1><span class="name">LEO<wbr>NARD</span><span class="row2"><span class="spark"></span><span class="outline">BUILDER</span></span></h1>
+      <p class="role"><span>Mobile Developer</span><span class="sep">/</span><span>AI Products</span><span class="sep">/</span><span>Olanda</span></p>
+      <p class="lead">Transform idei în <b>aplicații reale</b> — de la jocuri de cuvinte la asistenți AI. Construiesc, lansez și cresc produse de la zero.</p>
+      <div class="cta-row">
+        <a href="#proiecte" class="btn btn-solid" data-magnet>VEZI PROIECTELE <span class="arw">↗</span></a>
+        <a href="#contact" class="btn btn-line" data-magnet>CONTACT</a>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue" id="scrollCue"><span>SCROLL</span><span class="ln"></span></div>
+</section>
+
+<!-- ================= MARQUEE ================= -->
+<div class="marquee" aria-hidden="true">
+  <div class="mq-track" id="mqTrack">
+    <span>Flutter</span><span>Firebase</span><span>AI Products</span><span>Google Play</span><span>AdMob</span><span>Product Design</span><span>Python</span><span>Voice AI</span>
+  </div>
+</div>
+
+<!-- ================= DESPRE ================= -->
+<section id="despre">
+  <span class="sec-ghost" data-parallax>01</span>
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="photo-scene reveal">
+        <div class="photo-aura" aria-hidden="true"></div>
+        <div class="photo-card" id="photoCard">
+          <!-- 📷 ÎNLOCUIEȘTE acest div .pc-fill cu:
+               <img class="pc-fill" src="poza-mea.jpg" alt="Leonard" style="object-fit:cover"> -->
+          <div class="pc-fill">
+            <span class="big-l">L</span>
+            <span class="note">// adaugă poza ta aici</span>
+          </div>
+          <div class="shine"></div>
+          <div class="pc-cap"><span>LEONARD</span><span>OLANDA — NL</span></div>
+        </div>
+        <span class="photo-tag">23 y/o builder</span>
+      </div>
+
+      <div class="about-text reveal">
+        <span class="eyebrow"><i></i>Cine sunt</span>
+        <h2 class="sec-title" style="margin-bottom:34px">Despre mine</h2>
+        <p>Am <b>23 de ani</b>, sunt din România și locuiesc în Olanda. Ziua lucrez la <b>ASML</b>, ca <b>Key User</b> — în inima industriei de semiconductori.</p>
+        <p>Serile și weekendurile le dedic pasiunii mele: <b>construirea de produse digitale</b>. Iau o idee și o duc până la capăt — design, cod, monetizare, lansare. Prima aplicație, <b>DUMA</b>, e deja live pe Google Play. Obiectivul: <b>independența financiară</b> prin produse care contează.</p>
+        <div class="facts">
+          <div class="fact"><span class="k">Bază</span><span class="v">Olanda 🇳🇱</span></div>
+          <div class="fact"><span class="k">Zi de zi</span><span class="v">Key User @ ASML</span></div>
+          <div class="fact"><span class="k">După program</span><span class="v">Aplicații mobile & AI</span></div>
+          <div class="fact"><span class="k">Limbi</span><span class="v">Română · Engleză</span></div>
+          <div class="fact"><span class="k">Obiectiv</span><span class="v">Independență financiară</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CE FAC ================= -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><i></i>Ce fac</span>
+      <h2 class="sec-title">Trei direcții,<br>un singur scop.</h2>
+    </div>
+    <div class="do-cols stagger">
+      <div class="do-col">
+        <span class="num">/ 01</span>
+        <svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><line x1="10" y1="18.5" x2="14" y2="18.5"/></svg>
+        <h3>Aplicații mobile</h3>
+        <p>Aplicații Flutter complete pentru Android & iOS — de la concept și UI până la publicarea pe Google Play.</p>
+      </div>
+      <div class="do-col">
+        <span class="num">/ 02</span>
+        <svg viewBox="0 0 24 24"><path d="M12 2.5l1.8 5.7 5.7 1.8-5.7 1.8L12 17.5l-1.8-5.7L4.5 10l5.7-1.8z"/><circle cx="19" cy="19" r="2.2"/></svg>
+        <h3>Produse AI</h3>
+        <p>Asistenți inteligenți cu GPT, voce și memorie pe termen lung — unelte AI care chiar fac viața mai ușoară.</p>
+      </div>
+      <div class="do-col">
+        <span class="num">/ 03</span>
+        <svg viewBox="0 0 24 24"><path d="M3.5 20.5v-7"/><path d="M9.5 20.5V9"/><path d="M15.5 20.5V13"/><path d="M21.5 20.5V4.5"/></svg>
+        <h3>Monetizare & produs</h3>
+        <p>AdMob, cumpărături in-app și strategie de creștere — transform aplicațiile în produse sustenabile.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROIECTE ================= -->
+<section id="proiecte" style="padding-top:60px">
+  <span class="sec-ghost" data-parallax>02</span>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><i></i>Portofoliu</span>
+      <h2 class="sec-title">Proiecte<br>selectate.</h2>
+      <p>Produse construite de la zero — de la live pe Google Play până la prototipuri. <span style="font-family:var(--f-mono);font-size:12px;color:var(--txt-3)">( treci cu mouse-ul peste ele )</span></p>
+    </div>
+
+    <div class="works stagger">
+      <a class="work" style="--acc:#fb7185" data-acc="#fb7185" data-letter="D" data-label="WORD GAME">
+        <div class="w-line">
+          <span class="w-idx">01</span>
+          <div class="w-main"><h3>DUMA</h3><p>Joc de cuvinte în limba română · Flutter · Firebase · AdMob</p></div>
+          <span class="w-status live">● LIVE PE GOOGLE PLAY</span>
+          <span class="w-arr">→</span>
+        </div>
+      </a>
+      <a class="work" style="--acc:#34d399" data-acc="#34d399" data-letter="S" data-label="FINANCE">
+        <div class="w-line">
+          <span class="w-idx">02</span>
+          <div class="w-main"><h3>SUBTRACK</h3><p>Tracker de abonamente · 9 limbi · Sync cloud · Biometric</p></div>
+          <span class="w-status">Testare internă</span>
+          <span class="w-arr">→</span>
+        </div>
+      </a>
+      <a class="work" style="--acc:#a78bfa" data-acc="#a78bfa" data-letter="A" data-label="AI VOICE">
+        <div class="w-line">
+          <span class="w-idx">03</span>
+          <div class="w-main"><h3>ARIA</h3><p>Asistent AI personal pentru macOS · GPT-4o · Whisper · Memorie</p></div>
+          <span class="w-status">Proiect personal</span>
+          <span class="w-arr">→</span>
+        </div>
+      </a>
+      <a class="work" style="--acc:#38bdf8" data-acc="#38bdf8" data-letter="W" data-label="TRAVEL">
+        <div class="w-line">
+          <span class="w-idx">04</span>
+          <div class="w-main"><h3>WANDR</h3><p>Ghid de călătorie pentru Eindhoven · Google Maps · Places API</p></div>
+          <span class="w-status">Concept</span>
+          <span class="w-arr">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- preview flotant -->
+<div class="w-preview" id="wPreview" aria-hidden="true">
+  <div class="wp-phone">
+    <div class="wp-screen">
+      <div class="wp-notch"></div>
+      <span class="wp-letter" id="wpLetter">D</span>
+      <div class="wp-bars"><i></i><i></i><i></i></div>
+      <div class="wp-pill" id="wpPill">WORD GAME</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= STATS ================= -->
+<section style="padding:0 0 140px">
+  <div class="wrap">
+    <div class="stats stagger">
+      <div class="stat"><div class="n" data-count="4" data-suffix="+">0</div><div class="l">produse construite</div></div>
+      <div class="stat"><div class="n" data-count="1">0</div><div class="l">app live pe Google Play</div></div>
+      <div class="stat"><div class="n" data-count="9">0</div><div class="l">limbi în Subtrack</div></div>
+      <div class="stat"><div class="n">∞</div><div class="l">idei în pipeline</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VIITOR ================= -->
+<section id="viitor" style="padding-top:0">
+  <span class="sec-ghost" data-parallax>03</span>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><i></i>Ce urmează</span>
+      <h2 class="sec-title">Proiecte<br>viitoare.</h2>
+    </div>
+    <div class="future-list stagger">
+      <div class="future">
+        <span class="num">/ 01</span>
+        <div><h3>Unealtă de conținut TikTok</h3><p>Analiză de trenduri + scripturi generate cu AI, pentru creștere accelerată pe rețele.</p></div>
+        <span class="soon">SOON</span>
+      </div>
+      <div class="future">
+        <span class="num">/ 02</span>
+        <div><h3>Endless Runner cu avatare AI</h3><p>Un joc viral în care fiecare jucător primește un avatar personalizat, generat de AI.</p></div>
+        <span class="soon">SOON</span>
+      </div>
+      <div class="future">
+        <span class="num">/ 03</span>
+        <div><h3>Second Brain</h3><p>Asistent de memorie AI, voice-first, cu arhitectură privacy-first — al doilea creier al tău.</p></div>
+        <span class="soon">SOON</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STACK ================= -->
+<section id="stack" style="padding-top:0">
+  <span class="sec-ghost" data-parallax>04</span>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><i></i>Stack</span>
+      <h2 class="sec-title">Tehnologii.</h2>
+    </div>
+    <div class="tech-rows reveal">
+      <div class="tech-row"><div class="cat">Mobile</div><div class="tech-pills"><span class="pill">Flutter</span><span class="pill">Dart</span><span class="pill">Riverpod</span></div></div>
+      <div class="tech-row"><div class="cat">Backend & Cloud</div><div class="tech-pills"><span class="pill">Firebase</span><span class="pill">Firestore</span><span class="pill">FastAPI</span><span class="pill">Python</span></div></div>
+      <div class="tech-row"><div class="cat">AI</div><div class="tech-pills"><span class="pill">GPT-4o</span><span class="pill">Whisper</span><span class="pill">OpenAI TTS</span><span class="pill">ChromaDB</span></div></div>
+      <div class="tech-row"><div class="cat">Monetizare</div><div class="tech-pills"><span class="pill">AdMob</span><span class="pill">In-App Purchases</span></div></div>
+      <div class="tech-row"><div class="cat">Altele</div><div class="tech-pills"><span class="pill">SAP</span><span class="pill">Git</span><span class="pill">Electron</span><span class="pill">Three.js</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact">
+  <div class="wrap contact reveal">
+    <span class="eyebrow"><i></i>Contact</span>
+    <h2 class="big">Hai să<br>construim <em>ceva.</em></h2>
+    <a href="mailto:numele.tau@email.com" class="mail-link" data-magnet>numele.tau@email.com <span>→</span></a>
+    <div class="socials">
+      <a href="https://github.com/leonard401" target="_blank" rel="noopener" class="social" data-magnet>GITHUB ↗</a>
+      <a href="https://tiktok.com/@numele_tau" target="_blank" rel="noopener" class="social" data-magnet>TIKTOK ↗</a>
+      <a href="https://linkedin.com" target="_blank" rel="noopener" class="social" data-magnet>LINKEDIN ↗</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <span>© <span id="year"></span> LEONARD — construit cu pasiune & cafea</span>
+    <span id="clock">OLANDA — 00:00</span>
+    <span class="top" onclick="window.scrollTo({top:0,behavior:'smooth'})">ÎNAPOI SUS ↑</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ============================================================
+   LEONARD.PORTFOLIO — interactions & 3D
+   ============================================================ */
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer  = matchMedia('(pointer: fine)').matches;
+
+/* ---------- basics ---------- */
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const clock = document.getElementById('clock');
+function tick(){
+  try{
+    clock.textContent = 'OLANDA — ' + new Date().toLocaleTimeString('ro-RO',{timeZone:'Europe/Amsterdam',hour:'2-digit',minute:'2-digit'});
+  }catch(e){ clock.textContent = 'OLANDA — ' + new Date().toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'}); }
+}
+tick(); setInterval(tick, 15000);
+
+/* ---------- nav + progress + parallax cifre fantomă ---------- */
+const nav = document.getElementById('nav');
+const progress = document.getElementById('progress');
+const scrollCue = document.getElementById('scrollCue');
+const ghosts = [...document.querySelectorAll('[data-parallax]')];
+let scrollRaf = false;
+function onScroll(){
+  scrollRaf = false;
+  nav.classList.toggle('scrolled', scrollY > 40);
+  scrollCue.classList.toggle('hide', scrollY > 60);
+  const h = document.documentElement;
+  progress.style.width = (scrollY / (h.scrollHeight - h.clientHeight) * 100) + '%';
+  const cy = innerHeight / 2;
+  ghosts.forEach(g => {
+    const r = g.getBoundingClientRect();
+    g.style.transform = `translateY(${((r.top + r.height/2) - cy) * -0.14}px)`;
+  });
+}
+addEventListener('scroll', () => { if(!scrollRaf){ scrollRaf = true; requestAnimationFrame(onScroll); } }, {passive:true});
+onScroll();
+
+/* ---------- reveal on scroll (3D tilt-in) ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+}), {threshold:.12, rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.reveal,.stagger').forEach(el => io.observe(el));
+
+/* ---------- nav spy ---------- */
+const ids = ['despre','proiecte','viitor','stack'];
+const navLinks = document.querySelectorAll('nav.links a');
+const spy = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#'+e.target.id));
+}), {threshold:.35});
+ids.forEach(id => { const s = document.getElementById(id); if (s) spy.observe(s); });
+
+/* ---------- count up ---------- */
+const cio = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  const el = e.target, t = +el.dataset.count, suf = el.dataset.suffix || '';
+  let n = 0; const step = Math.max(1, Math.ceil(t / 28));
+  const iv = setInterval(() => { n += step; if (n >= t){ n = t; clearInterval(iv); } el.textContent = n + suf; }, 38);
+  cio.unobserve(el);
+}), {threshold:.6});
+document.querySelectorAll('[data-count]').forEach(c => cio.observe(c));
+
+/* ---------- custom cursor ---------- */
+if (finePointer && !reduceMotion){
+  const dot = document.getElementById('curDot'), ring = document.getElementById('curRing');
+  let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
+  addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx+'px'; dot.style.top = my+'px';
+  }, {passive:true});
+  (function loop(){
+    rx += (mx-rx)*.16; ry += (my-ry)*.16;
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('a,button,.work,.pill').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('big'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('big'));
+  });
+} else {
+  document.getElementById('curDot').style.display = 'none';
+  document.getElementById('curRing').style.display = 'none';
+}
+
+/* ---------- magnetic buttons ---------- */
+if (finePointer && !reduceMotion){
+  document.querySelectorAll('[data-magnet]').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width/2, y = e.clientY - r.top - r.height/2;
+      el.style.transform = `translate(${x*.25}px, ${y*.35}px)`;
+    });
+    el.addEventListener('mouseleave', () => el.style.transform = '');
+  });
+}
+
+/* ---------- photo card 3D tilt ---------- */
+const pc = document.getElementById('photoCard');
+if (pc && finePointer && !reduceMotion){
+  const scene = pc.parentElement;
+  scene.addEventListener('mousemove', e => {
+    const r = pc.getBoundingClientRect();
+    const px = (e.clientX - r.left)/r.width, py = (e.clientY - r.top)/r.height;
+    pc.style.transform = `rotateY(${(px-.5)*16}deg) rotateX(${(.5-py)*14}deg)`;
+    pc.style.setProperty('--sx', px*100+'%');
+    pc.style.setProperty('--sy', py*100+'%');
+  });
+  scene.addEventListener('mouseleave', () => pc.style.transform = '');
+}
+
+/* ---------- floating project preview ---------- */
+const prev = document.getElementById('wPreview');
+const wpLetter = document.getElementById('wpLetter');
+const wpPill = document.getElementById('wpPill');
+if (finePointer && !reduceMotion){
+  let px = 0, py = 0, tx = 0, ty = 0, lastX = 0, on = false;
+  addEventListener('mousemove', e => { tx = e.clientX + 30; ty = e.clientY; }, {passive:true});
+  (function loop(){
+    px += (tx-px)*.12; py += (ty-py)*.12;
+    if (on){
+      const vel = Math.max(-8, Math.min(8, (tx-lastX)*.35));
+      prev.style.setProperty('--tilt', vel.toFixed(2)+'deg');
+      prev.style.left = px+'px'; prev.style.top = py+'px';
+    }
+    lastX = tx;
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('.work').forEach(w => {
+    w.addEventListener('mouseenter', () => {
+      prev.style.setProperty('--acc', w.dataset.acc);
+      wpLetter.textContent = w.dataset.letter;
+      wpLetter.style.color = w.dataset.acc;
+      wpPill.textContent = w.dataset.label;
+      prev.classList.add('on'); on = true;
+    });
+    w.addEventListener('mouseleave', () => { prev.classList.remove('on'); on = false; });
+  });
+}
+
+/* ---------- marquee duplicate ---------- */
+const mq = document.getElementById('mqTrack');
+mq.innerHTML += mq.innerHTML;
+
+/* ============================================================
+   3D HERO — cristal iridescent care CĂLĂTOREȘTE cu scroll-ul
+   ============================================================ */
+(function init3D(){
+  const canvas = document.getElementById('webgl');
+  if (!window.THREE || !canvas) return;
+
+  let renderer;
+  try{
+    renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+  }catch(e){ canvas.style.display = 'none'; return; }
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(42, 1, .1, 60);
+  camera.position.z = 4.4;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+  /* ---- zgomot simplex 3D (Ashima) ---- */
+  const NOISE = `
+  vec3 mod289(vec3 x){return x - floor(x*(1.0/289.0))*289.0;}
+  vec4 mod289(vec4 x){return x - floor(x*(1.0/289.0))*289.0;}
+  vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
+  vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314*r;}
+  float snoise(vec3 v){
+    const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+    vec3 i = floor(v + dot(v, C.yyy));
+    vec3 x0 = v - i + dot(i, C.xxx);
+    vec3 g = step(x0.yzx, x0.xyz);
+    vec3 l = 1.0 - g;
+    vec3 i1 = min(g.xyz, l.zxy);
+    vec3 i2 = max(g.xyz, l.zxy);
+    vec3 x1 = x0 - i1 + C.xxx;
+    vec3 x2 = x0 - i2 + C.yyy;
+    vec3 x3 = x0 - D.yyy;
+    i = mod289(i);
+    vec4 p = permute(permute(permute(i.z + vec4(0.0,i1.z,i2.z,1.0)) + i.y + vec4(0.0,i1.y,i2.y,1.0)) + i.x + vec4(0.0,i1.x,i2.x,1.0));
+    float n_ = 0.142857142857;
+    vec3 ns = n_ * D.wyz - D.xzx;
+    vec4 j = p - 49.0*floor(p*ns.z*ns.z);
+    vec4 x_ = floor(j*ns.z);
+    vec4 y_ = floor(j - 7.0*x_);
+    vec4 x = x_*ns.x + ns.yyyy;
+    vec4 y = y_*ns.x + ns.yyyy;
+    vec4 h = 1.0 - abs(x) - abs(y);
+    vec4 b0 = vec4(x.xy, y.xy);
+    vec4 b1 = vec4(x.zw, y.zw);
+    vec4 s0 = floor(b0)*2.0 + 1.0;
+    vec4 s1 = floor(b1)*2.0 + 1.0;
+    vec4 sh = -step(h, vec4(0.0));
+    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+    vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+    vec3 p0 = vec3(a0.xy, h.x);
+    vec3 p1 = vec3(a0.zw, h.y);
+    vec3 p2 = vec3(a1.xy, h.z);
+    vec3 p3 = vec3(a1.zw, h.w);
+    vec4 norm = taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+    p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+    vec4 m = max(0.6 - vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)), 0.0);
+    m = m*m;
+    return 42.0*dot(m*m, vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+  }`;
+
+  const VERT = NOISE + `
+  uniform float uTime;
+  uniform float uAmp;
+  varying vec3 vPos;
+  varying float vDisp;
+  void main(){
+    vec3 p = position;
+    float n1 = snoise(p * 1.15 + uTime * vec3(0.16, 0.13, 0.10));
+    float n2 = snoise(p * 2.8  - uTime * 0.12) * 0.38;
+    float d = (n1 + n2) * uAmp;
+    vDisp = d;
+    vec3 np = p + normal * d;
+    vec4 mv = modelViewMatrix * vec4(np, 1.0);
+    vPos = mv.xyz;
+    gl_Position = projectionMatrix * mv;
+  }`;
+
+  const FRAG = `
+  precision highp float;
+  uniform float uTime;
+  uniform vec3 uC1; uniform vec3 uC2; uniform vec3 uC3;
+  varying vec3 vPos;
+  varying float vDisp;
+  void main(){
+    vec3 N = normalize(cross(dFdx(vPos), dFdy(vPos)));
+    vec3 V = normalize(-vPos);
+    float fres = pow(1.0 - max(dot(N, V), 0.0), 2.2);
+    float band = 0.5 + 0.5 * sin(vDisp * 7.0 + uTime * 0.5 + N.y * 3.5);
+    vec3 col = mix(uC1, uC2, band);
+    col = mix(col, uC3, fres * 0.85);
+    vec3 L = normalize(vec3(0.6, 0.9, 0.55));
+    float spec = pow(max(dot(N, L), 0.0), 4.0);
+    vec3 base = vec3(0.030, 0.030, 0.050);
+    vec3 final = base + col * (0.16 + fres * 1.25) + col * spec * 0.45;
+    gl_FragColor = vec4(final, 1.0);
+  }`;
+
+  const uniforms = {
+    uTime:{value:0},
+    uAmp:{value:0.34},
+    uC1:{value:new THREE.Color('#5eead4')},
+    uC2:{value:new THREE.Color('#a78bfa')},
+    uC3:{value:new THREE.Color('#fb7185')},
+  };
+
+  const geo = new THREE.IcosahedronGeometry(1.28, 5);
+  const mat = new THREE.ShaderMaterial({
+    vertexShader:VERT, fragmentShader:FRAG, uniforms,
+    extensions:{derivatives:true}
+  });
+  const crystal = new THREE.Mesh(geo, mat);
+
+  const wireMat = new THREE.ShaderMaterial({
+    vertexShader:VERT,
+    fragmentShader:`void main(){ gl_FragColor = vec4(0.75, 0.85, 1.0, 0.05); }`,
+    uniforms, wireframe:true, transparent:true, depthWrite:false
+  });
+  const wire = new THREE.Mesh(geo, wireMat);
+  wire.scale.setScalar(1.004);
+
+  const group = new THREE.Group();
+  group.add(crystal); group.add(wire);
+  scene.add(group);
+
+  /* particule */
+  const N_PTS = 650;
+  const pGeo = new THREE.BufferGeometry();
+  const pos = new Float32Array(N_PTS * 3);
+  for (let i = 0; i < N_PTS; i++){
+    const r = 2.1 + Math.random() * 2.6;
+    const th = Math.random() * Math.PI * 2;
+    const ph = Math.acos(2 * Math.random() - 1);
+    pos[i*3]   = r * Math.sin(ph) * Math.cos(th);
+    pos[i*3+1] = r * Math.sin(ph) * Math.sin(th) * 0.7;
+    pos[i*3+2] = r * Math.cos(ph) * 0.6 - 0.4;
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const pMat = new THREE.PointsMaterial({size:0.014, color:0x9aa3c8, transparent:true, opacity:.65, sizeAttenuation:true, depthWrite:false});
+  const stars = new THREE.Points(pGeo, pMat);
+  scene.add(stars);
+
+  /* ---- TRASEUL cristalului prin pagină (waypoints pe scroll) ---- */
+  let way = [];
+  function buildWaypoints(){
+    const top = id => { const el = document.getElementById(id); return el ? el.offsetTop : 0; };
+    const vh = innerHeight;
+    const end = Math.max(1, document.documentElement.scrollHeight - vh);
+    const mobile = innerWidth <= 980;
+    if (mobile){
+      way = [
+        {at:0,                       x:0, y:1.26, s:.46, o:.7,  rs:.20},
+        {at:vh*.9,                   x:0, y:1.5,  s:.4,  o:.4,  rs:.32},
+        {at:top('despre'),           x:0, y:1.45, s:.42, o:.28, rs:.45},
+        {at:top('contact')-vh*.6,    x:0, y:1.45, s:.42, o:.25, rs:.45},
+        {at:top('contact')-vh*.1,    x:0, y:.95,  s:.56, o:.85, rs:.26},
+        {at:end,                     x:0, y:.75,  s:.62, o:1,   rs:.24},
+      ];
+    } else {
+      way = [
+        {at:0,                       x:1.45,  y:0,    s:1.0, o:1,   rs:.18},
+        {at:vh*.85,                  x:1.55,  y:.18,  s:.92, o:1,   rs:.22},
+        {at:top('despre')-vh*.15,    x:-1.62, y:-.05, s:.58, o:.9,  rs:.32},
+        {at:top('proiecte')-vh*.15,  x:1.95,  y:.25,  s:.46, o:.40, rs:.50},
+        {at:top('viitor')-vh*.15,    x:-1.95, y:.10,  s:.42, o:.32, rs:.55},
+        {at:top('contact')-vh*.15,   x:1.35,  y:-.05, s:.88, o:.95, rs:.25},
+        {at:end,                     x:1.35,  y:.35,  s:.96, o:1,   rs:.22},
+      ];
+    }
+  }
+  function stateAt(sy){
+    if (sy <= way[0].at) return way[0];
+    for (let i = 0; i < way.length - 1; i++){
+      const a = way[i], b = way[i+1];
+      if (sy >= a.at && sy <= b.at){
+        let t = (sy - a.at) / Math.max(1, b.at - a.at);
+        t = t * t * (3 - 2 * t); /* smoothstep */
+        const L = k => a[k] + (b[k] - a[k]) * t;
+        return {x:L('x'), y:L('y'), s:L('s'), o:L('o'), rs:L('rs')};
+      }
+    }
+    return way[way.length - 1];
+  }
+
+  function layout(){
+    renderer.setSize(innerWidth, innerHeight, false);
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    buildWaypoints();
+  }
+  layout();
+  addEventListener('resize', layout);
+  /* offseturile secțiunilor se stabilizează după încărcarea fonturilor */
+  addEventListener('load', buildWaypoints);
+  setTimeout(buildWaypoints, 1200);
+
+  /* mouse parallax */
+  let tmx = 0, tmy = 0, smx = 0, smy = 0;
+  addEventListener('mousemove', e => {
+    tmx = (e.clientX / innerWidth  - .5);
+    tmy = (e.clientY / innerHeight - .5);
+  }, {passive:true});
+
+  let t0 = performance.now(), intro = 0;
+  let ss = 0, prevSS = 0, scrollTilt = 0, lastOpacity = -1;
+
+  function frame(now){
+    const t = (now - t0) / 1000;
+    uniforms.uTime.value = t;
+
+    intro = Math.min(1, intro + 0.014);
+    const e = 1 - Math.pow(1 - intro, 3);
+
+    /* scroll lin + impuls 3D din viteza de derulare */
+    ss += (scrollY - ss) * .08;
+    const dv = ss - prevSS; prevSS = ss;
+    scrollTilt = (scrollTilt + Math.max(-14, Math.min(14, dv)) * .0011) * .92;
+
+    const st = stateAt(ss);
+    group.position.x = st.x;
+    group.position.y = st.y;
+    const sc = st.s * (.65 + .35 * e);
+    crystal.scale.setScalar(sc);
+    wire.scale.setScalar(sc * 1.004);
+    stars.position.x = st.x * .7;
+    stars.position.y = st.y * .4;
+
+    smx += (tmx - smx) * .04;
+    smy += (tmy - smy) * .04;
+    group.rotation.y = t * st.rs + smx * .7 + ss * .0012;
+    group.rotation.x = smy * .5 + Math.sin(t * .3) * .06 + scrollTilt;
+    group.rotation.z = scrollTilt * .5;
+    stars.rotation.y = -t * .025;
+
+    const op = Math.round(st.o * 100) / 100;
+    if (op !== lastOpacity){ canvas.style.opacity = op; lastOpacity = op; }
+
+    renderer.render(scene, camera);
+    if (!reduceMotion) requestAnimationFrame(frame);
+  }
+  if (reduceMotion){ intro = 1; ss = scrollY; prevSS = ss; frame(performance.now()); }
+  else requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
