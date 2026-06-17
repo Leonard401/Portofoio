@@ -644,10 +644,12 @@
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
+<script type="module">
 /* ============================================================
    LEONARD.PORTFOLIO — interactions & 3D
    ============================================================ */
+import { lerpWaypoints, buildWaypoints as buildWaypointsList, formatClock, countUpStep } from './js/logic.js';
+
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer  = matchMedia('(pointer: fine)').matches;
 
@@ -655,11 +657,7 @@ const finePointer  = matchMedia('(pointer: fine)').matches;
 document.getElementById('year').textContent = new Date().getFullYear();
 
 const clock = document.getElementById('clock');
-function tick(){
-  try{
-    clock.textContent = 'OLANDA — ' + new Date().toLocaleTimeString('ro-RO',{timeZone:'Europe/Amsterdam',hour:'2-digit',minute:'2-digit'});
-  }catch(e){ clock.textContent = 'OLANDA — ' + new Date().toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'}); }
-}
+function tick(){ clock.textContent = formatClock(new Date()); }
 tick(); setInterval(tick, 15000);
 
 /* ---------- nav + progress + parallax cifre fantomă ---------- */
@@ -701,7 +699,7 @@ ids.forEach(id => { const s = document.getElementById(id); if (s) spy.observe(s)
 const cio = new IntersectionObserver(es => es.forEach(e => {
   if (!e.isIntersecting) return;
   const el = e.target, t = +el.dataset.count, suf = el.dataset.suffix || '';
-  let n = 0; const step = Math.max(1, Math.ceil(t / 28));
+  let n = 0; const step = countUpStep(t);
   const iv = setInterval(() => { n += step; if (n >= t){ n = t; clearInterval(iv); } el.textContent = n + suf; }, 38);
   cio.unobserve(el);
 }), {threshold:.6});
@@ -935,39 +933,10 @@ if (finePointer && !reduceMotion){
     const vh = innerHeight;
     const end = Math.max(1, document.documentElement.scrollHeight - vh);
     const mobile = innerWidth <= 980;
-    if (mobile){
-      way = [
-        {at:0,                       x:0, y:1.26, s:.46, o:.7,  rs:.20},
-        {at:vh*.9,                   x:0, y:1.5,  s:.4,  o:.4,  rs:.32},
-        {at:top('despre'),           x:0, y:1.45, s:.42, o:.28, rs:.45},
-        {at:top('contact')-vh*.6,    x:0, y:1.45, s:.42, o:.25, rs:.45},
-        {at:top('contact')-vh*.1,    x:0, y:.95,  s:.56, o:.85, rs:.26},
-        {at:end,                     x:0, y:.75,  s:.62, o:1,   rs:.24},
-      ];
-    } else {
-      way = [
-        {at:0,                       x:1.45,  y:0,    s:1.0, o:1,   rs:.18},
-        {at:vh*.85,                  x:1.55,  y:.18,  s:.92, o:1,   rs:.22},
-        {at:top('despre')-vh*.15,    x:-1.62, y:-.05, s:.58, o:.9,  rs:.32},
-        {at:top('proiecte')-vh*.15,  x:1.95,  y:.25,  s:.46, o:.40, rs:.50},
-        {at:top('viitor')-vh*.15,    x:-1.95, y:.10,  s:.42, o:.32, rs:.55},
-        {at:top('contact')-vh*.15,   x:1.35,  y:-.05, s:.88, o:.95, rs:.25},
-        {at:end,                     x:1.35,  y:.35,  s:.96, o:1,   rs:.22},
-      ];
-    }
+    way = buildWaypointsList({vh, end, top, mobile});
   }
   function stateAt(sy){
-    if (sy <= way[0].at) return way[0];
-    for (let i = 0; i < way.length - 1; i++){
-      const a = way[i], b = way[i+1];
-      if (sy >= a.at && sy <= b.at){
-        let t = (sy - a.at) / Math.max(1, b.at - a.at);
-        t = t * t * (3 - 2 * t); /* smoothstep */
-        const L = k => a[k] + (b[k] - a[k]) * t;
-        return {x:L('x'), y:L('y'), s:L('s'), o:L('o'), rs:L('rs')};
-      }
-    }
-    return way[way.length - 1];
+    return lerpWaypoints(way, sy);
   }
 
   function layout(){
