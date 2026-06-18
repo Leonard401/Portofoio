@@ -38,3 +38,29 @@ test('renders without horizontal overflow on a mobile viewport', async ({ page }
   );
   expect(hasOverflow).toBeFalsy();
 });
+
+test('language toggle switches the page to English and back', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ro');
+  await expect(page.locator('#langToggle')).toHaveText('EN');
+  await expect(page.locator('.hi')).toContainText('salut');
+
+  await page.click('#langToggle');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('#langToggle')).toHaveText('RO');
+  await expect(page.locator('.hi')).toContainText("hi, i'm");
+
+  await page.click('#langToggle');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ro');
+  await expect(page.locator('.hi')).toContainText('salut');
+});
+
+test('language preference persists across reloads', async ({ page }) => {
+  await page.goto('/');
+  await page.click('#langToggle');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('#langToggle')).toHaveText('RO');
+});

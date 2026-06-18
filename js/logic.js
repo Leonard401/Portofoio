@@ -38,11 +38,13 @@ export function buildWaypoints({ vh, end, top, mobile }) {
   ];
 }
 
-export function formatClock(date) {
+export function formatClock(date, lang = 'ro') {
+  const prefix = lang === 'en' ? 'NETHERLANDS — ' : 'OLANDA — ';
+  const locale = lang === 'en' ? 'en-GB' : 'ro-RO';
   try {
-    return 'OLANDA — ' + date.toLocaleTimeString('ro-RO', { timeZone: 'Europe/Amsterdam', hour: '2-digit', minute: '2-digit' });
+    return prefix + date.toLocaleTimeString(locale, { timeZone: 'Europe/Amsterdam', hour: '2-digit', minute: '2-digit' });
   } catch (e) {
-    return 'OLANDA — ' + date.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
+    return prefix + date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
   }
 }
 

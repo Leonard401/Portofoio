@@ -137,8 +137,11 @@
   nav.links a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--irid);transition:.3s}
   nav.links a:hover,nav.links a.active{color:var(--txt)}
   nav.links a:hover::after,nav.links a.active::after{width:100%}
+  .nav-actions{display:flex;align-items:center;gap:14px}
   .nav-cta{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.04em;padding:11px 22px;border:1px solid var(--line-2);border-radius:100px;transition:.3s;white-space:nowrap;display:inline-block}
   .nav-cta:hover{background:#fff;color:#000;border-color:#fff}
+  .lang-toggle{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.04em;padding:11px 18px;border:1px solid var(--line-2);border-radius:100px;background:transparent;color:var(--txt);transition:.3s;white-space:nowrap;cursor:pointer}
+  .lang-toggle:hover{background:#fff;color:#000;border-color:#fff}
 
   /* ---------- hero ---------- */
   .hero{min-height:100svh;display:flex;align-items:center;padding:140px 0 90px;overflow:hidden}
@@ -368,6 +371,9 @@
   @media (max-width:520px){
     .wrap{padding:0 22px}
     .nav-inner{padding:18px 22px}
+    .nav-actions{gap:8px}
+    .nav-cta{padding:9px 16px;font-size:11px}
+    .lang-toggle{padding:9px 14px;font-size:11px}
     .photo-tag{right:-8px}
     .hero h1 .outline{-webkit-text-stroke-width:1.9px}
   }
@@ -402,12 +408,15 @@
   <div class="nav-inner">
     <a href="#top" class="logo">leonard<b>.</b></a>
     <nav class="links">
-      <a href="#despre">DESPRE</a>
-      <a href="#proiecte">PROIECTE</a>
-      <a href="#viitor">VIITOR</a>
+      <a href="#despre" data-i18n="nav.about">DESPRE</a>
+      <a href="#proiecte" data-i18n="nav.projects">PROIECTE</a>
+      <a href="#viitor" data-i18n="nav.future">VIITOR</a>
       <a href="#stack">STACK</a>
     </nav>
-    <a href="#contact" class="nav-cta" data-magnet>HAI SĂ VORBIM →</a>
+    <div class="nav-actions">
+      <a href="#contact" class="nav-cta" data-magnet data-i18n="nav.cta">HAI SĂ VORBIM →</a>
+      <button type="button" id="langToggle" class="lang-toggle" data-magnet aria-label="Switch to English">EN</button>
+    </div>
   </div>
 </header>
 
@@ -417,13 +426,13 @@
 
   <div class="wrap hero-content">
     <div class="hero-anim">
-      <span class="status"><span class="live"></span>DISPONIBIL PENTRU COLABORĂRI</span>
-      <p class="hi">// salut, eu sunt</p>
+      <span class="status"><span class="live"></span><span data-i18n="hero.status">DISPONIBIL PENTRU COLABORĂRI</span></span>
+      <p class="hi" data-i18n="hero.hi">// salut, eu sunt</p>
       <h1><span class="name">LEO<wbr>NARD</span><span class="row2"><span class="spark"></span><span class="outline">BUILDER</span></span></h1>
-      <p class="role"><span>Mobile Developer</span><span class="sep">/</span><span>AI Products</span><span class="sep">/</span><span>Olanda</span></p>
-      <p class="lead">Transform idei în <b>aplicații reale</b> — de la jocuri de cuvinte la asistenți AI. Construiesc, lansez și cresc produse de la zero.</p>
+      <p class="role"><span>Mobile Developer</span><span class="sep">/</span><span>AI Products</span><span class="sep">/</span><span data-i18n="hero.role.location">Olanda</span></p>
+      <p class="lead" data-i18n="hero.lead">Transform idei în <b>aplicații reale</b> — de la jocuri de cuvinte la asistenți AI. Construiesc, lansez și cresc produse de la zero.</p>
       <div class="cta-row">
-        <a href="#proiecte" class="btn btn-solid" data-magnet>VEZI PROIECTELE <span class="arw">↗</span></a>
+        <a href="#proiecte" class="btn btn-solid" data-magnet><span data-i18n="hero.cta.projects">VEZI PROIECTELE</span> <span class="arw">↗</span></a>
         <a href="#contact" class="btn btn-line" data-magnet>CONTACT</a>
       </div>
     </div>
@@ -443,25 +452,25 @@
                <img class="pc-fill" src="poza-mea.jpg" alt="Leonard" style="object-fit:cover"> -->
           <div class="pc-fill">
             <span class="big-l">L</span>
-            <span class="note">// adaugă poza ta aici</span>
+            <span class="note" data-i18n="about.photo.note">// adaugă poza ta aici</span>
           </div>
           <div class="shine"></div>
-          <div class="pc-cap"><span>LEONARD VISOIU</span><span>OLANDA — NL</span></div>
+          <div class="pc-cap"><span>LEONARD VISOIU</span><span data-i18n="about.photo.location">OLANDA — NL</span></div>
         </div>
         <span class="photo-tag">23 y/o builder</span>
       </div>
 
       <div class="about-text reveal">
-        <span class="eyebrow"><i></i>Cine sunt</span>
-        <h2 class="sec-title" style="margin-bottom:34px">Despre mine</h2>
-        <p>Am <b>23 de ani</b>, sunt din România și locuiesc în Olanda. Ziua lucrez ca <b>SAP Key User pentru ASML</b> — în inima industriei de semiconductori.</p>
-        <p>Serile și weekendurile le dedic pasiunii mele: <b>construirea de produse digitale</b>. Iau o idee și o duc până la capăt — design, cod, lansare. Primul meu produs, jocul <b>DUMA</b>, e deja publicat oficial pe Google Play — primul ajuns efectiv în mâinile oamenilor. Obiectivul meu: <b>dezvoltare continuă</b>, să cresc constant ca developer și să construiesc produse din ce în ce mai bune.</p>
+        <span class="eyebrow"><i></i><span data-i18n="about.eyebrow">Cine sunt</span></span>
+        <h2 class="sec-title" style="margin-bottom:34px" data-i18n="about.title">Despre mine</h2>
+        <p data-i18n="about.p1">Am <b>23 de ani</b>, sunt din România și locuiesc în Olanda. Ziua lucrez ca <b>SAP Key User pentru ASML</b> — în inima industriei de semiconductori.</p>
+        <p data-i18n="about.p2">Serile și weekendurile le dedic pasiunii mele: <b>construirea de produse digitale</b>. Iau o idee și o duc până la capăt — design, cod, lansare. Primul meu produs, jocul <b>DUMA</b>, e deja publicat oficial pe Google Play — primul ajuns efectiv în mâinile oamenilor. Obiectivul meu: <b>dezvoltare continuă</b>, să cresc constant ca developer și să construiesc produse din ce în ce mai bune.</p>
         <div class="facts">
-          <div class="fact"><span class="k">Bază</span><span class="v">Olanda 🇳🇱</span></div>
-          <div class="fact"><span class="k">Zi de zi</span><span class="v">SAP Key User · ASML</span></div>
-          <div class="fact"><span class="k">După program</span><span class="v">Aplicații mobile & AI</span></div>
-          <div class="fact"><span class="k">Limbi</span><span class="v">Română · Engleză</span></div>
-          <div class="fact"><span class="k">Obiectiv</span><span class="v">Dezvoltare continuă</span></div>
+          <div class="fact"><span class="k" data-i18n="about.fact.base.k">Bază</span><span class="v" data-i18n="about.fact.base.v">Olanda 🇳🇱</span></div>
+          <div class="fact"><span class="k" data-i18n="about.fact.day.k">Zi de zi</span><span class="v">SAP Key User · ASML</span></div>
+          <div class="fact"><span class="k" data-i18n="about.fact.after.k">După program</span><span class="v" data-i18n="about.fact.after.v">Aplicații mobile & AI</span></div>
+          <div class="fact"><span class="k" data-i18n="about.fact.lang.k">Limbi</span><span class="v" data-i18n="about.fact.lang.v">Română · Engleză</span></div>
+          <div class="fact"><span class="k" data-i18n="about.fact.goal.k">Obiectiv</span><span class="v" data-i18n="about.fact.goal.v">Dezvoltare continuă</span></div>
         </div>
       </div>
     </div>
@@ -472,27 +481,27 @@
 <section style="padding-top:0">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="eyebrow"><i></i>Ce fac</span>
-      <h2 class="sec-title">Trei direcții,<br>un singur scop.</h2>
+      <span class="eyebrow"><i></i><span data-i18n="do.eyebrow">Ce fac</span></span>
+      <h2 class="sec-title" data-i18n="do.title">Trei direcții,<br>un singur scop.</h2>
     </div>
     <div class="do-cols stagger">
       <div class="do-col">
         <span class="num">/ 01</span>
         <svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><line x1="10" y1="18.5" x2="14" y2="18.5"/></svg>
-        <h3>Aplicații mobile</h3>
-        <p>Aplicații Flutter complete pentru Android & iOS — de la concept și UI până la publicarea pe Google Play.</p>
+        <h3 data-i18n="do.col1.title">Aplicații mobile</h3>
+        <p data-i18n="do.col1.desc">Aplicații Flutter complete pentru Android & iOS — de la concept și UI până la publicarea pe Google Play.</p>
       </div>
       <div class="do-col">
         <span class="num">/ 02</span>
         <svg viewBox="0 0 24 24"><path d="M12 2.5l1.8 5.7 5.7 1.8-5.7 1.8L12 17.5l-1.8-5.7L4.5 10l5.7-1.8z"/><circle cx="19" cy="19" r="2.2"/></svg>
-        <h3>Produse AI</h3>
-        <p>Asistenți inteligenți cu GPT, voce și memorie pe termen lung — unelte AI care chiar fac viața mai ușoară.</p>
+        <h3 data-i18n="do.col2.title">Produse AI</h3>
+        <p data-i18n="do.col2.desc">Asistenți inteligenți cu GPT, voce și memorie pe termen lung — unelte AI care chiar fac viața mai ușoară.</p>
       </div>
       <div class="do-col">
         <span class="num">/ 03</span>
         <svg viewBox="0 0 24 24"><path d="M3.5 20.5v-7"/><path d="M9.5 20.5V9"/><path d="M15.5 20.5V13"/><path d="M21.5 20.5V4.5"/></svg>
-        <h3>Monetizare & produs</h3>
-        <p>AdMob, cumpărături in-app și strategie de creștere — transform aplicațiile în produse sustenabile.</p>
+        <h3 data-i18n="do.col3.title">Monetizare & produs</h3>
+        <p data-i18n="do.col3.desc">AdMob, cumpărături in-app și strategie de creștere — transform aplicațiile în produse sustenabile.</p>
       </div>
     </div>
   </div>
@@ -503,40 +512,40 @@
   <span class="sec-ghost" data-parallax>02</span>
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="eyebrow"><i></i>Portofoliu</span>
-      <h2 class="sec-title">Proiecte<br>selectate.</h2>
-      <p>Produse construite de la zero — de la live pe Google Play până la prototipuri. <span style="font-family:var(--f-mono);font-size:12px;color:var(--txt-3)">( treci cu mouse-ul peste ele )</span></p>
+      <span class="eyebrow"><i></i><span data-i18n="works.eyebrow">Portofoliu</span></span>
+      <h2 class="sec-title" data-i18n="works.title">Proiecte<br>selectate.</h2>
+      <p data-i18n="works.intro">Produse construite de la zero — de la live pe Google Play până la prototipuri. <span style="font-family:var(--f-mono);font-size:12px;color:var(--txt-3)">( treci cu mouse-ul peste ele )</span></p>
     </div>
 
     <div class="works stagger">
       <a class="work" style="--acc:#fb7185" data-acc="#fb7185" data-letter="D" data-label="WORD GAME">
         <div class="w-line">
           <span class="w-idx">01</span>
-          <div class="w-main"><h3>DUMA</h3><p>Joc de cuvinte în limba română · Flutter · Firebase · AdMob</p></div>
-          <span class="w-status live">● LIVE PE GOOGLE PLAY</span>
+          <div class="w-main"><h3>DUMA</h3><p data-i18n="works.duma.desc">Joc de cuvinte în limba română · Flutter · Firebase · AdMob</p></div>
+          <span class="w-status live" data-i18n="works.duma.status">● LIVE PE GOOGLE PLAY</span>
           <span class="w-arr">→</span>
         </div>
       </a>
       <a class="work" style="--acc:#34d399" data-acc="#34d399" data-letter="S" data-label="FINANCE">
         <div class="w-line">
           <span class="w-idx">02</span>
-          <div class="w-main"><h3>SUBTRACK</h3><p>Tracker de abonamente · 9 limbi · Sync cloud · Biometric</p></div>
-          <span class="w-status">Testare internă</span>
+          <div class="w-main"><h3>SUBTRACK</h3><p data-i18n="works.subtrack.desc">Tracker de abonamente · 9 limbi · Sync cloud · Biometric</p></div>
+          <span class="w-status" data-i18n="works.subtrack.status">Testare internă</span>
           <span class="w-arr">→</span>
         </div>
       </a>
       <a class="work" style="--acc:#a78bfa" data-acc="#a78bfa" data-letter="A" data-label="AI VOICE">
         <div class="w-line">
           <span class="w-idx">03</span>
-          <div class="w-main"><h3>ARIA</h3><p>Asistent AI personal pentru macOS · GPT-4o · Whisper · Memorie</p></div>
-          <span class="w-status">Proiect personal</span>
+          <div class="w-main"><h3>ARIA</h3><p data-i18n="works.aria.desc">Asistent AI personal pentru macOS · GPT-4o · Whisper · Memorie</p></div>
+          <span class="w-status" data-i18n="works.aria.status">Proiect personal</span>
           <span class="w-arr">→</span>
         </div>
       </a>
       <a class="work" style="--acc:#38bdf8" data-acc="#38bdf8" data-letter="W" data-label="TRAVEL">
         <div class="w-line">
           <span class="w-idx">04</span>
-          <div class="w-main"><h3>WANDR</h3><p>Ghid de călătorie pentru Eindhoven · Google Maps · Places API</p></div>
+          <div class="w-main"><h3>WANDR</h3><p data-i18n="works.wandr.desc">Ghid de călătorie pentru Eindhoven · Google Maps · Places API</p></div>
           <span class="w-status">Concept</span>
           <span class="w-arr">→</span>
         </div>
@@ -544,8 +553,8 @@
       <a class="work" style="--acc:#fbbf24" data-acc="#fbbf24" data-letter="G" data-label="BUSINESS">
         <div class="w-line">
           <span class="w-idx">05</span>
-          <div class="w-main"><h3>GESTIO</h3><p>Gestiune stoc &amp; comenzi pentru IMM-uri · e-Factura · SAF-T · Flutter</p></div>
-          <span class="w-status">În dezvoltare</span>
+          <div class="w-main"><h3>GESTIO</h3><p data-i18n="works.gestio.desc">Gestiune stoc &amp; comenzi pentru IMM-uri · e-Factura · SAF-T · Flutter</p></div>
+          <span class="w-status" data-i18n="works.gestio.status">În dezvoltare</span>
           <span class="w-arr">→</span>
         </div>
       </a>
@@ -568,10 +577,10 @@
 <section style="padding:0 0 140px">
   <div class="wrap">
     <div class="stats stagger">
-      <div class="stat"><div class="n" data-count="4" data-suffix="+">0</div><div class="l">produse construite</div></div>
-      <div class="stat"><div class="n" data-count="1">0</div><div class="l">app live pe Google Play</div></div>
-      <div class="stat"><div class="n" data-count="9">0</div><div class="l">limbi în Subtrack</div></div>
-      <div class="stat"><div class="n">∞</div><div class="l">idei în pipeline</div></div>
+      <div class="stat"><div class="n" data-count="4" data-suffix="+">0</div><div class="l" data-i18n="stats.l1">produse construite</div></div>
+      <div class="stat"><div class="n" data-count="1">0</div><div class="l" data-i18n="stats.l2">app live pe Google Play</div></div>
+      <div class="stat"><div class="n" data-count="9">0</div><div class="l" data-i18n="stats.l3">limbi în Subtrack</div></div>
+      <div class="stat"><div class="n">∞</div><div class="l" data-i18n="stats.l4">idei în pipeline</div></div>
     </div>
   </div>
 </section>
@@ -581,23 +590,23 @@
   <span class="sec-ghost" data-parallax>03</span>
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="eyebrow"><i></i>Ce urmează</span>
-      <h2 class="sec-title">Proiecte<br>viitoare.</h2>
+      <span class="eyebrow"><i></i><span data-i18n="future.eyebrow">Ce urmează</span></span>
+      <h2 class="sec-title" data-i18n="future.title">Proiecte<br>viitoare.</h2>
     </div>
     <div class="future-list stagger">
       <div class="future">
         <span class="num">/ 01</span>
-        <div><h3>Unealtă de conținut TikTok</h3><p>Analiză de trenduri + scripturi generate cu AI, pentru creștere accelerată pe rețele.</p></div>
+        <div><h3 data-i18n="future.item1.title">Unealtă de conținut TikTok</h3><p data-i18n="future.item1.desc">Analiză de trenduri + scripturi generate cu AI, pentru creștere accelerată pe rețele.</p></div>
         <span class="soon">SOON</span>
       </div>
       <div class="future">
         <span class="num">/ 02</span>
-        <div><h3>Endless Runner cu avatare AI</h3><p>Un joc viral în care fiecare jucător primește un avatar personalizat, generat de AI.</p></div>
+        <div><h3 data-i18n="future.item2.title">Endless Runner cu avatare AI</h3><p data-i18n="future.item2.desc">Un joc viral în care fiecare jucător primește un avatar personalizat, generat de AI.</p></div>
         <span class="soon">SOON</span>
       </div>
       <div class="future">
         <span class="num">/ 03</span>
-        <div><h3>Second Brain</h3><p>Asistent de memorie AI, voice-first, cu arhitectură privacy-first — al doilea creier al tău.</p></div>
+        <div><h3>Second Brain</h3><p data-i18n="future.item3.desc">Asistent de memorie AI, voice-first, cu arhitectură privacy-first — al doilea creier al tău.</p></div>
         <span class="soon">SOON</span>
       </div>
     </div>
@@ -610,14 +619,14 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow"><i></i>Stack</span>
-      <h2 class="sec-title">Tehnologii.</h2>
+      <h2 class="sec-title" data-i18n="stack.title">Tehnologii.</h2>
     </div>
     <div class="tech-rows reveal">
       <div class="tech-row"><div class="cat">Mobile</div><div class="tech-pills"><span class="pill">Flutter</span><span class="pill">Dart</span><span class="pill">Riverpod</span></div></div>
       <div class="tech-row"><div class="cat">Backend & Cloud</div><div class="tech-pills"><span class="pill">Firebase</span><span class="pill">Firestore</span><span class="pill">FastAPI</span><span class="pill">Python</span></div></div>
       <div class="tech-row"><div class="cat">AI</div><div class="tech-pills"><span class="pill">GPT-4o</span><span class="pill">Whisper</span><span class="pill">OpenAI TTS</span><span class="pill">ChromaDB</span></div></div>
-      <div class="tech-row"><div class="cat">Monetizare</div><div class="tech-pills"><span class="pill">AdMob</span><span class="pill">In-App Purchases</span></div></div>
-      <div class="tech-row"><div class="cat">Altele</div><div class="tech-pills"><span class="pill">SAP</span><span class="pill">Git</span><span class="pill">Electron</span><span class="pill">Three.js</span></div></div>
+      <div class="tech-row"><div class="cat" data-i18n="stack.cat.monetization">Monetizare</div><div class="tech-pills"><span class="pill">AdMob</span><span class="pill">In-App Purchases</span></div></div>
+      <div class="tech-row"><div class="cat" data-i18n="stack.cat.other">Altele</div><div class="tech-pills"><span class="pill">SAP</span><span class="pill">Git</span><span class="pill">Electron</span><span class="pill">Three.js</span></div></div>
     </div>
   </div>
 </section>
@@ -626,7 +635,7 @@
 <section id="contact">
   <div class="wrap contact reveal">
     <span class="eyebrow"><i></i>Contact</span>
-    <h2 class="big">Hai să<br>construim <em>ceva.</em></h2>
+    <h2 class="big" data-i18n="contact.title">Hai să<br>construim <em>ceva.</em></h2>
     <a href="mailto:lvisoiu300@gmail.com" class="mail-link" data-magnet>lvisoiu300@gmail.com <span>→</span></a>
     <div class="socials">
       <a href="https://github.com/Leonard401" target="_blank" rel="noopener" class="social" data-magnet>GITHUB ↗</a>
@@ -637,9 +646,9 @@
 
 <footer>
   <div class="wrap foot-inner">
-    <span>© <span id="year"></span> LEONARD VISOIU — construit cu pasiune & cafea</span>
+    <span>© <span id="year"></span> LEONARD VISOIU — <span data-i18n="footer.tagline">construit cu pasiune & cafea</span></span>
     <span id="clock">OLANDA — 00:00</span>
-    <span class="top" onclick="window.scrollTo({top:0,behavior:'smooth'})">ÎNAPOI SUS ↑</span>
+    <span class="top" onclick="window.scrollTo({top:0,behavior:'smooth'})" data-i18n="footer.top">ÎNAPOI SUS ↑</span>
   </div>
 </footer>
 
@@ -649,6 +658,7 @@
    LEONARD.PORTFOLIO — interactions & 3D
    ============================================================ */
 import { lerpWaypoints, buildWaypoints as buildWaypointsList, formatClock, countUpStep } from './js/logic.js';
+import { otherLanguage, getStoredLanguage, storeLanguage, applyLanguage } from './js/i18n.js';
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer  = matchMedia('(pointer: fine)').matches;
@@ -656,9 +666,23 @@ const finePointer  = matchMedia('(pointer: fine)').matches;
 /* ---------- basics ---------- */
 document.getElementById('year').textContent = new Date().getFullYear();
 
+/* ---------- language toggle ---------- */
+let lang = getStoredLanguage();
+const langToggle = document.getElementById('langToggle');
+function setLanguage(next){
+  lang = next;
+  applyLanguage(lang);
+  storeLanguage(lang);
+  langToggle.textContent = otherLanguage(lang).toUpperCase();
+  langToggle.setAttribute('aria-label', lang === 'ro' ? 'Switch to English' : 'Comută la română');
+  tick();
+}
+langToggle.addEventListener('click', () => setLanguage(otherLanguage(lang)));
+
 const clock = document.getElementById('clock');
-function tick(){ clock.textContent = formatClock(new Date()); }
-tick(); setInterval(tick, 15000);
+function tick(){ clock.textContent = formatClock(new Date(), lang); }
+setLanguage(lang);
+setInterval(tick, 15000);
 
 /* ---------- nav + progress + parallax cifre fantomă ---------- */
 const nav = document.getElementById('nav');

@@ -69,9 +69,14 @@ describe('buildWaypoints', () => {
 });
 
 describe('formatClock', () => {
-  it('formats the time for the Netherlands locale', () => {
-    const date = new Date('2024-01-01T12:30:00Z');
+  const date = new Date('2024-01-01T12:30:00Z');
+
+  it('defaults to the Romanian prefix and locale', () => {
     expect(formatClock(date)).toMatch(/^OLANDA — \d{2}:\d{2}$/);
+  });
+
+  it('switches to the English prefix when lang is "en"', () => {
+    expect(formatClock(date, 'en')).toMatch(/^NETHERLANDS — \d{2}:\d{2}$/);
   });
 });
 
